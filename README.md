@@ -151,7 +151,7 @@ You can also use the declared values in the errormessage. (e.g.: $YOUR_CONST: )
 
 ### Results and tests
 
-The result contains an array with errors (incorrect) or can be an ok (corrent) result.
+The result contains an array with errors (incorrect) or can be an ok (correct) result.
 
 
 Incorrect result with error.
