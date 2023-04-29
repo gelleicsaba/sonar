@@ -148,7 +148,7 @@ The import declaration:
             -> {y >= MIN && y <= MAX} -> (202) -> "The year must be between $MIN: and $MAX:"
 ```
 
-### Results and testing it
+### Results and tests
 
 The result contains an array with errors (incorrect) or can be an ok (corrent) result.
 
