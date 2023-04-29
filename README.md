@@ -114,6 +114,8 @@ You can give a calculation or a fix value with the constant name.
             -> { s.length <= MAX && s.length >= MIN } -> (101) -> "The size must be $MIN: - $MAX:"
             -> { spIndex !== -1 } -> (102) -> "You must specify a name (first name, surname)"
 ```
+For the present there is no difference between #Watch and #Const but further later the #Const is gonna be protected and read only.
+
 
 ### 8.2.'#Import' statement
 
@@ -145,7 +147,6 @@ The import declaration:
             -> {dates.isRealDate(d)} -> (201) -> "The given string is not a date format or a real date"
             -> {y >= MIN && y <= MAX} -> (202) -> "The year must be between $MIN: and $MAX:"
 ```
-For the present there is no difference between #Watch and #Const but further later the #Const is gonna be protected and read only.
 
 ### Results and testing it
 
