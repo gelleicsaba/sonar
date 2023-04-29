@@ -176,7 +176,7 @@ The OK result is simple:
 }
 ```
 
-You may test the validator with executing test.js.
+You can test the validator with executing test.js.
 ```
 node test.js
 ```
