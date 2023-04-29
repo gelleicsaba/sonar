@@ -101,20 +101,23 @@ The rule policies start with '->' in the lines, and go on with "{ statement }". 
 ```
 As we see we have to specify the correct condition and if it fails, the error will be added to the result.
 
-### 8.1.'#Watch' and '#Const' descriptors
+### 8.1.'#Watch', '#Const' and '#Set' descriptors
 
 You can give a calculation or a fix value with the constant name.
 ```
     ...
     {
-        @myString -> s 
+        @myString -> s
+            #Set { s = s.trim() }
             #Const { MIN = 3 }
             #Const { MAX = 20 }
-            #Watch { spIndex = s.trim().indexOf(' ') }
-            -> { s.length <= MAX && s.length >= MIN } -> (101) -> "The size must be $MIN: - $MAX:"
-            -> { spIndex !== -1 } -> (102) -> "You must specify a name (first name, surname)"
+            #Watch { len = s.length }
+            -> { len <= MAX && len >= MIN } -> (101) -> "The size must be $MIN: - $MAX:"
+            -> { s.indexOf(' ') !== -1 } -> (102) -> "You must specify a name (first name, surname)"
 ```
-For the present there is no difference between #Watch and #Const but further later the #Const is gonna be protected and read only.
+* The '#Watch' is really a local declaration like 'let a = b'
+* The '#Const' is a constant declaration like 'const a = b'
+* The '#Set' is a changing variable like 'a = b'. It can't be used with constants.
 
 
 ### 8.2.'#Import' statement

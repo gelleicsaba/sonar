@@ -148,20 +148,26 @@ exports.Sonars = class {
 			const impConst = q.cmd.split("#Import")[1].trim().split("->")[1].trim();
 			imports += "const " + impConst + " = require('./" + impName + ".js');";
 		});
-		const watches = elements.filter((q) => { return q.cmd.startsWith("#Watch") || q.cmd.startsWith("#Const"); } );
+		const watches = elements.filter((q) => { return q.cmd.startsWith("#Watch") || q.cmd.startsWith("#Const") || q.cmd.startsWith("#Set"); } );
 		const rules = elements.filter((q) => { return q.cmd.startsWith("->"); } );
 		let watchEval = undefined;
 		let varConst = undefined; /* this will be used only to replace the $ names in the error message */
 		if (typeof obj === 'string' || obj instanceof String) {
-			watchEval = imports + "const " + varname + " = '" + obj + "'; ";
+			watchEval = imports + "let " + varname + " = '" + obj + "'; ";
 		} else {
-			watchEval = imports + "const " + varname + " = " + obj + "; ";
+			watchEval = imports + "let " + varname + " = " + obj + "; ";
 		}
 		varConst = watchEval;
 		let watchValues = {};
 		watches.forEach((q) => {
-			const operation = q.cmd.split("{")[1].split("}")[0];			
-			watchEval += "const " + operation + "; ";
+			const operation = q.cmd.split("{")[1].split("}")[0];
+			if (q.cmd.indexOf("#Const") !== -1) {
+				watchEval += "const " + operation + "; ";
+			} else if (q.cmd.indexOf("#Watch") !== -1) {
+				watchEval += "let " + operation + "; ";
+			} else if (q.cmd.indexOf("#Set") !== -1) {
+				watchEval += operation + "; ";
+			}
 			const watchVarName = operation.split("=")[0].trim();
 			const watchValueEval = operation.split("=")[1].trim();
 			watchValues[watchVarName] = watchValueEval;
