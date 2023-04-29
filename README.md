@@ -147,6 +147,7 @@ The import declaration:
             -> {dates.isRealDate(d)} -> (201) -> "The given string is not a date format or a real date"
             -> {y >= MIN && y <= MAX} -> (202) -> "The year must be between $MIN: and $MAX:"
 ```
+You can also use the declared values in the errormessage. (e.g.: $YOUR_CONST: )
 
 ### Results and tests
 
