@@ -25,7 +25,7 @@ The statements can be these:
 * Float
 * Bool
 * #Import
-* #Watch #Const
+* #Watch #Const #Set
 * -> (custom rules)
 * [ (arrays)
 * { (objects)
