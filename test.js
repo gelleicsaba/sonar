@@ -24,7 +24,7 @@ const testTemplate =
                     -> {dates.isRealDate(d)} -> (201) -> "The given string is not a date format or a real date"
                     -> {y >= MIN && y <= MAX} -> (202) -> "The year must be between $MIN: and $MAX:"
                 @grossSalary -> q Required Int
-                    -> {q >= 0} -> (301) -> "The gross salary is can't be zero or negative"
+                    -> {q >= 0} -> (301) -> "The gross salary can't be zero or negative"
                     -> {q < 99999999} -> (302) -> "The gross salary exceed the limit"
 `;
 
