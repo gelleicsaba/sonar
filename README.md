@@ -175,7 +175,7 @@ You can also use the declared values in the errormessage. (e.g.: $YOUR_CONST: )
 
 ### Executing, Results and tests
 
-You need to import and call 'validate' the function.
+You need to import and call the 'validate' function.
 ```
 const s = require("./sonars/parselib.js");
 const template =
