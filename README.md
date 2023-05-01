@@ -24,6 +24,12 @@ The statements can be these:
 * Int
 * Float
 * Bool
+* IntArray
+* FloatArray
+* BoolArray
+* StringArray
+* ObjArray
+* Types(<type list>)
 * #Import
 * #Watch #Const #Set
 * -> (custom rules)
@@ -68,13 +74,28 @@ The 'Required' specification:
         @mayVar -> _ Required
 ```
 
-The 'OneOrMore' and/or 'Limit' specification:
+The 'OneOrMore', 'Limit' and 'Count' specification:
 ```
     @myVar -> _
         [ OneOrMore Limit(50)
-            ...
-
+    @myVar2 -> _
+        [ Count(4)
 ```
+
+There are statements to define homogeneous array with int,float,string,object and boolean values.
+```
+    @numbers -> _
+        [ IntArray
+```
+
+You can define the exact types that you expect with 'Types'.
+```
+    @user -> _
+        [ Types(Int,String,String,Bool) Count(4)
+    @fields -> _
+        [ StringArray Count(4)
+```
+
 
 ## 6.Type checkings
 
@@ -152,10 +173,31 @@ The import declaration:
 ```
 You can also use the declared values in the errormessage. (e.g.: $YOUR_CONST: )
 
-### Results and tests
+### Executing, Results and tests
+
+You need to import and call 'validate' the function.
+```
+const s = require("./sonars/parselib.js");
+const template =
+`{
+    @form -> _ Required
+        {
+            @name -> s String
+                -> { s.length < 50 } -> (114) -> "The name is too long"
+            @age -> n Int
+                -> { n < 120 && n > 0 } -> (115) -> "The age is incorrect"
+`;
+const data = {
+    form: {
+        name: "John Joe"
+        , age: 18
+    }
+};
+const result = s.validate(template, data);
+console.log("result: " + JSON.stringify(result));
+```
 
 The result contains an array with errors (incorrect) or can be an ok (correct) result.
-
 
 Incorrect result with error.
 ```
@@ -179,7 +221,7 @@ The OK result is simple:
 }
 ```
 
-You can test the validator with executing test.js.
+There are some testing examples in the test.js.
 ```
 node test.js
 ```

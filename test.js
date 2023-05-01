@@ -34,7 +34,7 @@ let testObj = {
         , { birthday: "2001-03-03" }
     ]
 };
-let result = (new s.Sonars(testObj, testTemplate)).check();
+result = s.validate(testObj, testTemplate);
 console.log("-=: Required elements :=-");
 console.log("Request: \n"+ JSON.stringify(testObj,null,2));
 console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
@@ -46,7 +46,7 @@ testObj = {
         , {name: "Jack Lee", grossSalary: 85943, birthday: "202-03-03" }
     ]
 };
-result = (new s.Sonars(testObj, testTemplate)).check();
+result = s.validate(testObj, testTemplate);
 console.log("-=: Required elements :=-");
 console.log("Request: \n"+ JSON.stringify(testObj,null,2));
 console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
@@ -55,7 +55,7 @@ console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
 testObj = {
     employees: []
 };
-result = (new s.Sonars(testObj, testTemplate)).check();
+result = s.validate(testObj, testTemplate);
 console.log("-=: One or more array length :=-");
 console.log("Request: \n"+ JSON.stringify(testObj,null,2));
 console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
@@ -66,8 +66,30 @@ testObj = {
         { name: 775.0, grossSalary: "No good salary", birthday: 1234 }
     ]
 };
-result = (new s.Sonars(testObj, testTemplate)).check();
+result = s.validate(testObj, testTemplate);
 console.log("-=: Type errors :=-");
+console.log("Request: \n"+ JSON.stringify(testObj,null,2));
+console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
+
+
+const testTemplate2 =
+`{
+    @rows -> _ Required
+        [
+            [ Types(Int,String,Int,Bool) Count(4)
+    @fields -> _
+        [ StringArray Count(4)
+`
+
+testObj = {
+    rows: [ 
+        [1, "Admin", "f99ab87c66df45", true],
+        [2, "Guest", "a8f5423d9c8ffa", true]
+    ]
+    , fields: [ "Id", "Name", "Password", "Active" ]
+};
+result = s.validate(testObj, testTemplate2);
+console.log("-=: Array types :=-");
 console.log("Request: \n"+ JSON.stringify(testObj,null,2));
 console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
 
@@ -78,9 +100,7 @@ testObj = {
         { name: "Test Joe", grossSalary: 600000, birthday: "1980-03-03" }
     ]
 };
-result = (new s.Sonars(testObj, testTemplate)).check();
+result = s.validate(testObj, testTemplate);
 console.log("-=: Everything is correct :=-");
 console.log("Request: \n"+ JSON.stringify(testObj,null,2));
 console.log("Response: \n"+ JSON.stringify(result,null,2) + "\n\n");
-
-

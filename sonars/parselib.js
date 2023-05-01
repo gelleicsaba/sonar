@@ -1,4 +1,4 @@
-exports.Sonars = class { 
+class Sonars { 
 	/* created from this letters : jSONpARSe */
 	
 	constructor(obj, template) {
@@ -113,6 +113,7 @@ exports.Sonars = class {
 		const t = this;
 		const elements = t.tree.filter((q) => { return q.path == path });
 		const element = elements.filter((q) => { return q.cmd[0] == "@"; })[0];
+		if (element == undefined || element['cmd'] == undefined) return;
 		const varname = element.cmd.split("->")[1].trim().split(" ")[0].trim();
 		/* type errors */
 		if (element.cmd.indexOf(" Int") != -1 && ! t.isInt(obj)) {
@@ -217,12 +218,15 @@ exports.Sonars = class {
 		const element = t.tree.filter((q) => { return q.path == path })[0];
 		const parentElement = t.tree[element.parent];
 		if (element.cmd.indexOf(" OneOrMore") != -1 && obj.length == 0) {
-
 			let parentName = undefined;
 			if (parentElement.cmd[0] == "@") {
-				parentName = parentElement.cmd[0].split("->")[0].trim().split("@")[1];
+				parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
 			} else {
-				parentName = "?";
+				let pr = t.tree[element.parent];
+				while (pr.cmd[0] != "@" && pr.parent > 0) {
+					pr = pr.cmd;
+				}
+				parentName = pr.cmd.split("->")[0].trim().split("@")[1];
 			}
 			const errmsg = "The number of the elements must be at least 1";
 			const errObj = { type: "Size.OneOrMore", element: parentName, code: 0, path: element.path, message: errmsg }; 
@@ -233,13 +237,231 @@ exports.Sonars = class {
 			if (obj.length > max) {
 				let parentName = undefined;
 				if (parentElement.cmd[0] == "@") {
-					parentName = parentElement.cmd[0].split("->")[0].trim().split("@")[1];
+					parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
 				} else {
-					parentName = "?";
+					let pr = t.tree[element.parent];
+					while (pr.cmd[0] != "@" && pr.parent > 0) {
+						pr = pr.cmd;
+					}
+					parentName = pr.cmd.split("->")[0].trim().split("@")[1];
 				}
 				const errmsg = "The number of the elements exceed the size: " + max;
 				const errObj = { type: "Size.Limit", element: parentName, code: 0, path: element.path, message: errmsg };
 				element.errors.push(errObj);
+			}
+		} 
+		if (element.cmd.indexOf(" Count(") != -1) {
+			const max = parseInt(element.cmd.split(" Count(")[1].split(")")[0].trim());
+			if (obj.length != max) {
+				let parentName = undefined;
+				if (parentElement.cmd[0] == "@") {
+					parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+				} else {
+					let pr = t.tree[element.parent];
+					while (pr.cmd[0] != "@" && pr.parent > 0) {
+						pr = pr.cmd;
+					}
+					parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+				}
+				const errmsg = "The number of the elements is not the specified size: " + max;
+				const errObj = { type: "Size.Count", element: parentName, code: 0, path: element.path, message: errmsg };
+				element.errors.push(errObj);
+			}
+		}
+		if (element.cmd.indexOf(" IntArray") != -1) {
+			obj.forEach((q) => {
+				if (! t.isInt(q)) {
+					let parentName = undefined;
+					if (parentElement.cmd[0] == "@") {
+						parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+					} else {
+						let pr = t.tree[element.parent];
+						while (pr.cmd[0] != "@" && pr.parent > 0) {
+							pr = pr.cmd;
+						}
+						parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+					}
+					const errmsg = "The array must be an array with integer values";
+					const errObj = { type: "IntArray", element: parentName, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+					element.errors.push(errObj);
+		
+				}
+			});
+		} else if (element.cmd.indexOf(" ObjArray") != -1) {
+			obj.forEach((q) => {
+				if (! t.isObject(q)) {
+					let parentName = undefined;
+					if (parentElement.cmd[0] == "@") {
+						parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+					} else {
+						let pr = t.tree[element.parent];
+						while (pr.cmd[0] != "@" && pr.parent > 0) {
+							pr = pr.cmd;
+						}
+						parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+					}
+					const errmsg = "The array must be an array with objects";
+					const errObj = { type: "ObjArray", element: parentName, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+					element.errors.push(errObj);
+		
+				}
+			});
+		} else if (element.cmd.indexOf(" FloatArray") != -1) {
+			obj.forEach((q) => {
+				if (! t.isFloat(q)) {
+					let parentName = undefined;
+					if (parentElement.cmd[0] == "@") {
+						parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+					} else {
+						let pr = t.tree[element.parent];
+						while (pr.cmd[0] != "@" && pr.parent > 0) {
+							pr = pr.cmd;
+						}
+						parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+					}
+					const errmsg = "The array must be an array with float values";
+					const errObj = { type: "FloatArray", element: parentName, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+					element.errors.push(errObj);
+					return;
+				}
+			});
+		} else if (element.cmd.indexOf(" StringArray") != -1) {
+			obj.forEach((q) => {
+				if (! t.isString(q)) {
+					let parentName = undefined;
+					if (parentElement.cmd[0] == "@") {
+						parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+					} else {
+						let pr = t.tree[element.parent];
+						while (pr.cmd[0] != "@" && pr.parent > 0) {
+							pr = pr.cmd;
+						}
+						parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+					}
+					const errmsg = "The array must be an array with string values";
+					const errObj = { type: "StringArray", element: parentName, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+					element.errors.push(errObj);
+					return;
+				}
+			});
+		} else if (element.cmd.indexOf(" BoolArray") != -1) {
+			obj.forEach((q) => {
+				if (! t.isBool(q)) {
+					let parentName = undefined;
+					if (parentElement.cmd[0] == "@") {
+						parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+					} else {
+						let pr = t.tree[element.parent];
+						while (pr.cmd[0] != "@" && pr.parent > 0) {
+							pr = pr.cmd;
+						}
+						parentName = pr.cmd.split("->")[0].trim().split("@")[1];
+					}
+					const errmsg = "The array must be an array with string values";
+					const errObj = { type: "BoolArray", element: parentName, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+					element.errors.push(errObj);
+					return;
+				}
+			});
+		} else if (element.cmd.indexOf(" Types(") != -1) {
+			const types = element.cmd.split(" Types(")[1].trim().split(")")[0].trim().split(",");
+
+			const q = obj;
+			for (let n = 0; n < types.length; ++n) {
+
+				switch (types[n].trim()) {
+					case "Int":
+						if (! t.isInt(q[n])) {
+							let parentName = undefined;
+							if (parentElement.cmd[0] == "@") {
+								parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+							} else {
+								let pr = element.parent;
+								
+								while (t.tree[pr].cmd[0] != "@" && t.tree[pr].parent > 0) {
+									pr = t.tree[pr].parent;
+								}
+								parentName = t.tree[pr].cmd.split("->")[0].trim().split("@")[1];
+							}
+							const errmsg = "The array must contain an integer value at index " + n;
+							const errObj = { type: "ArrayElement.Int", element: parentName, arrayIndex: n, value: q[n].toString(), code: 0, path: element.path, message: errmsg }; 
+							element.errors.push(errObj);
+						}
+						break;
+					case "Float":
+						if (! t.isFloat(q[n])) {
+							let parentName = undefined;
+							if (parentElement.cmd[0] == "@") {
+								parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+							} else {
+								let pr = element.parent;
+								
+								while (t.tree[pr].cmd[0] != "@" && t.tree[pr].parent > 0) {
+									pr = t.tree[pr].parent;
+								}
+								parentName = t.tree[pr].cmd.split("->")[0].trim().split("@")[1];
+							}
+							const errmsg = "The array must contain an float value at index " + n;
+							const errObj = { type: "ArrayElement.Float", element: parentName, arrayIndex: n, value: q[n].toString(), code: 0, path: element.path, message: errmsg }; 
+							element.errors.push(errObj);
+						}
+						break;
+					case "Object":
+					case "Obj":
+							if (! t.isObject(q[n])) {
+								let parentName = undefined;
+								if (parentElement.cmd[0] == "@") {
+									parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+								} else {
+									let pr = element.parent;
+									
+									while (t.tree[pr].cmd[0] != "@" && t.tree[pr].parent > 0) {
+										pr = t.tree[pr].parent;
+									}
+									parentName = t.tree[pr].cmd.split("->")[0].trim().split("@")[1];
+								}
+								const errmsg = "The array must contain an object at index " + n;
+								const errObj = { type: "ArrayElement.Object", element: parentName, arrayIndex: n, value: q[n].toString(), code: 0, path: element.path, message: errmsg }; 
+								element.errors.push(errObj);
+							}
+							break;
+					case "String":
+						if (! t.isString(q[n])) {
+							let parentName = undefined;
+							if (parentElement.cmd[0] == "@") {
+								parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+							} else {
+								let pr = element.parent;
+								
+								while (t.tree[pr].cmd[0] != "@" && t.tree[pr].parent > 0) {
+									pr = t.tree[pr].parent;
+								}
+								parentName = t.tree[pr].cmd.split("->")[0].trim().split("@")[1];
+							}
+							const errmsg = "The array must contain a string value at index " + n;
+							const errObj = { type: "ArrayElement.String", element: parentName, arrayIndex: n, value: q.toString(), code: 0, path: element.path, message: errmsg }; 
+							element.errors.push(errObj);
+						}
+						break;
+					case "Bool":
+						if (! t.isBool(q[n])) {
+							let parentName = undefined;
+							if (parentElement.cmd[0] == "@") {
+								parentName = parentElement.cmd.split("->")[0].trim().split("@")[1];
+							} else {
+								let pr = element.parent;
+								
+								while (t.tree[pr].cmd[0] != "@" && t.tree[pr].parent > 0) {
+									pr = t.tree[pr].parent;
+								}
+								parentName = t.tree[pr].cmd.split("->")[0].trim().split("@")[1];
+							}
+							const errmsg = "The array must contain a boolean at index " + n;
+							const errObj = { type: "ArrayElement.Bool", element: parentName, arrayIndex: n, value: q[n].toString(), code: 0, path: element.path, message: errmsg }; 
+							element.errors.push(errObj);
+						}
+						break;
+				}
 			}
 		}
 
@@ -296,5 +518,8 @@ exports.Sonars = class {
 	isString(q) {
 		return (typeof q === 'string' || q instanceof String);
 	}
-
+}
+exports.Sonars = Sonars;
+exports.validate = (obj, template) => {
+	return new Sonars(obj, template).check();
 }
